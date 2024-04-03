@@ -31,3 +31,12 @@ func (r *UserPostgres) GetById(id string) (UserProfile, error) {
 
 	return user, err
 }
+
+func (r *UserPostgres) Search(firstName string, lastName string) ([]UserProfile, error) {
+	var users []UserProfile
+
+	query := fmt.Sprintf(`SELECT first_name, last_name, birth_date, gender, biography, city FROM %s WHERE first_name ILIKE $1 AND last_name ILIKE $2`, usersTable)
+	err := r.db.Select(&users, query, firstName+"%", lastName+"%")
+
+	return users, err
+}
