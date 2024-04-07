@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/eydeveloper/highload-social/database/seeds"
+	"github.com/eydeveloper/highload-social/internal/seeds"
 	"os"
 
 	"github.com/eydeveloper/highload-social/internal/repository"
@@ -35,7 +35,7 @@ func main() {
 		logrus.Fatalf("failed to initialized db: %s", err.Error())
 	}
 
-	usersSeeder := seeds.NewUsersSeeder(db, 10000)
+	usersSeeder := seeds.NewUsersSeeder(db, 100000)
 	err = usersSeeder.Seed()
 	if err != nil {
 		logrus.Fatalf("failed to seed the database: %s", err.Error())
