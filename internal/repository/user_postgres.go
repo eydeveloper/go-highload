@@ -35,8 +35,16 @@ func (r *UserPostgres) GetById(id string) (UserProfile, error) {
 func (r *UserPostgres) Search(firstName string, lastName string) ([]UserProfile, error) {
 	var users []UserProfile
 
-	query := fmt.Sprintf(`SELECT first_name, last_name, birth_date, gender, biography, city FROM %s WHERE first_name ILIKE $1 AND last_name ILIKE $2`, usersTable)
-	err := r.db.Select(&users, query, firstName+"%", lastName+"%")
+	query := fmt.Sprintf(`
+	SELECT first_name, last_name, birth_date, gender, biography, city
+	FROM %s
+	WHERE
+	to_tsvector('english', first_name) @@ to_tsquery('english', $1)
+	AND
+	to_tsvector('english', last_name) @@ to_tsquery('english', $2)
+	`, usersTable)
+	err := r.db.Select(&users, query, firstName+":*", lastName+":*")
+
 
 	return users, err
 }
