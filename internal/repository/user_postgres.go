@@ -26,8 +26,25 @@ type UserProfile struct {
 func (r *UserPostgres) GetById(id string) (UserProfile, error) {
 	var user UserProfile
 
-	query := fmt.Sprintf(`SELECT first_name, last_name, birth_date, gender, biography, city FROM %s WHERE id = $1`, usersTable)
+	query := fmt.Sprintf(`SELECT first_name, last_name, birth_date, gender, biography, city FROM %s WHERE id = $1 LIMIT 1`, usersTable)
 	err := r.db.Get(&user, query, id)
 
 	return user, err
+}
+
+func (r *UserPostgres) Search(firstName string, lastName string) ([]UserProfile, error) {
+	var users []UserProfile
+
+	query := fmt.Sprintf(`
+	SELECT first_name, last_name, birth_date, gender, biography, city
+	FROM %s
+	WHERE
+	to_tsvector('english', first_name) @@ to_tsquery('english', $1)
+	AND
+	to_tsvector('english', last_name) @@ to_tsquery('english', $2)
+	`, usersTable)
+	err := r.db.Select(&users, query, firstName+":*", lastName+":*")
+
+
+	return users, err
 }

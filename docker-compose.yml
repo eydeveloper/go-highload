@@ -5,12 +5,19 @@ services:
     image: postgres:15
     restart: always
     ports:
-      - 5432:5432
+      - "5432:5432"
+    shm_size: 1gb 
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-  
+    volumes:
+    - ./docker/postgresql/config.conf:/var/lib/postgresql/data/postgresql.conf
+    - postgresql-data:/var/lib/postgresql/data
+
+volumes:
+  postgresql-data:
+
 networks:
   default:
     driver: bridge

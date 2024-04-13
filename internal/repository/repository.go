@@ -12,6 +12,7 @@ type Authorization interface {
 
 type User interface {
 	GetById(id string) (UserProfile, error)
+	Search(firstName string, lastName string) ([]UserProfile, error)
 }
 
 type Repository struct {

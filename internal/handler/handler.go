@@ -27,6 +27,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		user := api.Group("user")
 		{
 			user.GET(":id", h.getUserById)
+			user.GET("search", h.searchUser)
 		}
 	}
 

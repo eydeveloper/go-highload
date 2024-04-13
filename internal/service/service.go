@@ -12,6 +12,7 @@ type Authorization interface {
 
 type User interface {
 	GetById(id string) (repository.UserProfile, error)
+	Search(firstName string, lastName string) ([]repository.UserProfile, error)
 }
 
 type Service struct {
