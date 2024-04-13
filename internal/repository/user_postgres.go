@@ -26,7 +26,7 @@ type UserProfile struct {
 func (r *UserPostgres) GetById(id string) (UserProfile, error) {
 	var user UserProfile
 
-	query := fmt.Sprintf(`SELECT first_name, last_name, birth_date, gender, biography, city FROM %s WHERE id = $1`, usersTable)
+	query := fmt.Sprintf(`SELECT first_name, last_name, birth_date, gender, biography, city FROM %s WHERE id = $1 LIMIT 1`, usersTable)
 	err := r.db.Get(&user, query, id)
 
 	return user, err
