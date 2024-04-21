@@ -2,7 +2,10 @@
 
 ## Description
 
-This project serves as a practical learning tool directly related to my studies in software architecture. As a student enrolled in a software architecture course, I've developed this project to deepen my understanding of architectural principles and refine my practical skills.
+This project serves as a practical learning tool directly related to my studies in software architecture. As a student
+enrolled in a software architecture course, I've developed this project to deepen my understanding of architectural
+principles and refine my practical skills. Synchronous replication is configured in this application to ensure data
+integrity of slave replicas.
 
 ## Prerequisites
 
@@ -24,12 +27,30 @@ To set up this project, follow these steps:
    DB_PASSWORD=<database_password>
    ```
 
-3. Run the migrations to set up the database schema:
+3. Start the Docker services and prepare slave replicas.
    ```shell
-   migrate -path ./schema -database 'postgres://postgres:{{.Env.DB_PASSWORD}}@localhost:5432/postgres?sslmode=disable' up
+   make up
+   make postgres-slave-1-bash
+   pg_basebackup -h postgres-master -D /var/lib/postgresql/data -U replicator -R --wal-method=stream
+   exit
+   make postgres-slave-2-bash
+   pg_basebackup -h postgres-master -D /var/lib/postgresql/data -U replicator -R --wal-method=stream
+   exit
    ```
 
-4. Start the server by running the following command:
+4. Run the migrations to set up the database schema:
+   ```shell
+   migrate -path ./schema -database 'postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable' up
+   ```
+
+5. Create GIN indexes:
+   ```shell
+   make postgres-master-psql
+   create index <index_name> on users using gin (to_tsvector('english', first_name), to_tsvector('english', last_name));
+   exit
+   ```
+
+6. Start the server by running the following command:
    ```shell
    go run cmd/main.go
    ```
@@ -41,3 +62,4 @@ To set up this project, follow these steps:
 - Register: Allows users to register for a new account.
 - Login: Enables users to authenticate and log in to their accounts.
 - Get User by ID: Retrieves user information based on the provided user ID.
+- Search users by name: Finds users by first name and last name.
