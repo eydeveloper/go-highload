@@ -3,10 +3,25 @@ include .env
 .DEFAULT_GOAL := help
 
 help: ## This help
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-postgres: ## Log in to the PostgreSQL console from default user
-	docker compose exec postgres psql -U $(DB_USER) -W $(DB_NAME)
+postgres-master-bash: ## Connect to the PostgreSQL master service using bash.
+	docker compose exec -it postgres-master bash
+
+postgres-slave-1-bash: ## Connect to the first PostgreSQL slave service using bash.
+	docker compose exec -it postgres-slave-1 bash
+
+postgres-slave-2-bash: ## Connect to the second PostgreSQL slave service using bash.
+	docker compose exec -it postgres-slave-2 bash
+
+postgres-master-psql: ## Log in to the PostgreSQL master console from default user
+	docker compose exec -it postgres-master psql -U postgres
+
+postgres-slave-1-psql: ## Log in to the first PostgreSQL slave console from default user
+	docker compose exec -it postgres-slave-1 psql -U postgres
+
+postgres-slave-2-psql: ## Log in to the second PostgreSQL slave console from default user
+	docker compose exec -it postgres-slave-2 psql -U postgres
 
 up: ## Up Docker-project
 	docker compose up -d

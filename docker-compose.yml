@@ -1,23 +1,83 @@
-version: '3'
-
 services:
-  postgres:
+  postgres-master:
     image: postgres:15
-    restart: always
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/etc/postgresql/postgresql.conf"
+      - "-c"
+      - "hba_file=/etc/postgresql/pg_hba.conf"
+    build: ./docker/postgres/master
+    restart: unless-stopped
     ports:
       - "5432:5432"
-    shm_size: 1gb 
+    shm_size: 1gb
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-    - ./docker/postgresql/config.conf:/var/lib/postgresql/data/postgresql.conf
-    - postgresql-data:/var/lib/postgresql/data
+      - postgres-master-data:/var/lib/postgresql/data
+      - ./docker/postgres/master/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/postgres/master/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    networks:
+      - postgres
+  postgres-slave-1:
+    image: postgres:15
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/etc/postgresql/postgresql.conf"
+      - "-c"
+      - "hba_file=/etc/postgresql/pg_hba.conf"
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    shm_size: 1gb
+    environment:
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    volumes:
+      - postgres-slave-1-data:/var/lib/postgresql/data
+      - ./docker/postgres/slave-1/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/postgres/slave-1/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    networks:
+      - postgres
+    depends_on:
+      - postgres-master
+  postgres-slave-2:
+    image: postgres:15
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/etc/postgresql/postgresql.conf"
+      - "-c"
+      - "hba_file=/etc/postgresql/pg_hba.conf"
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    shm_size: 1gb
+    environment:
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    volumes:
+      - postgres-slave-2-data:/var/lib/postgresql/data
+      - ./docker/postgres/slave-2/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/postgres/slave-2/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    networks:
+      - postgres
+    depends_on:
+      - postgres-master
 
 volumes:
-  postgresql-data:
+  postgres-master-data:
+  postgres-slave-1-data:
+  postgres-slave-2-data:
 
 networks:
-  default:
+  postgres:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
