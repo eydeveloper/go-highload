@@ -1,8 +1,16 @@
 port: '8000'
 
-db: 
+db:
   host: "localhost"
   port: "5432"
+  username: "postgres"
+  password: "postgres"
+  dbname: "postgres"
+  sslmode: "disable"
+
+db-slave:
+  host: "localhost"
+  port: "5433"
   username: "postgres"
   password: "postgres"
   dbname: "postgres"

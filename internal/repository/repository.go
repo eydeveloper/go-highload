@@ -20,9 +20,9 @@ type Repository struct {
 	User
 }
 
-func NewRepository(db *sqlx.DB) *Repository {
+func NewRepository(db *sqlx.DB, dbSlave *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
-		User:          NewUserPostgres(db),
+		User:          NewUserPostgres(dbSlave),
 	}
 }
