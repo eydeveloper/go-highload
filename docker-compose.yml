@@ -68,11 +68,35 @@ services:
       - postgres
     depends_on:
       - postgres-master
+  postgres-slave-3:
+    image: postgres:15
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/etc/postgresql/postgresql.conf"
+      - "-c"
+      - "hba_file=/etc/postgresql/pg_hba.conf"
+    restart: unless-stopped
+    ports:
+      - "5435:5432"
+    shm_size: 1gb
+    environment:
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    volumes:
+      - postgres-slave-3-data:/var/lib/postgresql/data
+      - ./docker/postgres/slave-3/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/postgres/slave-3/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    networks:
+      - postgres
+    depends_on:
+      - postgres-master
 
 volumes:
   postgres-master-data:
   postgres-slave-1-data:
   postgres-slave-2-data:
+  postgres-slave-3-data:
 
 networks:
   postgres:
