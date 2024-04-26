@@ -7,6 +7,7 @@ import (
 )
 
 const usersTable = "users"
+const userFollowersTable = "user_followers"
 
 type Config struct {
 	Host     string

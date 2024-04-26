@@ -19,7 +19,7 @@ func (h *Handler) getUserById(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (h *Handler) searchUser(c *gin.Context) {
+func (h *Handler) searchUsers(c *gin.Context) {
 	firstName := c.Query("first_name")
 	lastName := c.Query("last_name")
 

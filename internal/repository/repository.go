@@ -15,14 +15,21 @@ type User interface {
 	Search(firstName string, lastName string) ([]UserProfile, error)
 }
 
+type Following interface {
+	Follow(followeeId string, followerId string) error
+	Unfollow(followeeId string, followerId string) error
+}
+
 type Repository struct {
 	Authorization
 	User
+	Following
 }
 
 func NewRepository(db *sqlx.DB, dbSlave *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
 		User:          NewUserPostgres(dbSlave),
+		Following:     NewFollowingPostgres(db),
 	}
 }

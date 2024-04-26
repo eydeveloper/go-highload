@@ -52,6 +52,23 @@ func (s *AuthService) GenerateToken(id string, password string) (string, error) 
 	return token.SignedString([]byte(signingKey))
 }
 
+func (s *AuthService) ParseToken(tokenString string) (string, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &tokenClaims{}, func (token *jwt.Token) (interface{}, error) {
+		return []byte(signingKey), nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	if claims, ok := token.Claims.(*tokenClaims); ok && token.Valid {
+		userId := claims.UserId
+		return userId, nil
+	}
+
+	return "", nil
+}
+
 func generatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
