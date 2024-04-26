@@ -9,5 +9,6 @@ CREATE TABLE users
     gender user_genders NOT NULL,
     biography TEXT,
     city VARCHAR(255),
-    password_hash VARCHAR(255) NOT NULL
+    password_hash VARCHAR(255) NOT NULL,
+    CONSTRAINT unique_user_id UNIQUE (id)
 );
