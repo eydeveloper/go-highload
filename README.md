@@ -40,7 +40,7 @@ To set up this project, follow these steps:
 
 4. Run the migrations to set up the database schema:
    ```shell
-   migrate -path ./schema -database 'postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable' up
+   migrate -path ./database/schema -database 'postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable' up
    ```
 
 5. Create GIN indexes:

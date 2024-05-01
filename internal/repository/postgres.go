@@ -7,6 +7,7 @@ import (
 )
 
 const usersTable = "users"
+const userPostsTable = "user_posts"
 const userFollowersTable = "user_followers"
 
 type Config struct {

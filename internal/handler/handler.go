@@ -32,6 +32,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			user.GET("search", h.searchUsers)
 		}
 
+		post := api.Group("post")
+		{
+			post.POST("", h.authenticationMiddleware(), h.createPost)
+			post.PUT(":id", h.authenticationMiddleware(), h.updatePost)
+			post.GET(":id", h.authenticationMiddleware(), h.getPost)
+			post.DELETE(":id", h.authenticationMiddleware(), h.deletePost)
+		}
+
 		api.PUT("follow/:id", h.authenticationMiddleware(), h.follow)
 		api.PUT("unfollow/:id", h.authenticationMiddleware(), h.unfollow)
 	}

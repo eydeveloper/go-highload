@@ -15,6 +15,13 @@ type User interface {
 	Search(firstName string, lastName string) ([]UserProfile, error)
 }
 
+type Post interface {
+	Create(userId string, post entity.Post) (string, error)
+	Update(userId string, postId string, post entity.Post) error
+	Get(id string) (entity.Post, error)
+	Delete(userId string, postId string) error
+}
+
 type Following interface {
 	Follow(followeeId string, followerId string) error
 	Unfollow(followeeId string, followerId string) error
@@ -23,6 +30,7 @@ type Following interface {
 type Repository struct {
 	Authorization
 	User
+	Post
 	Following
 }
 
@@ -30,6 +38,7 @@ func NewRepository(db *sqlx.DB, dbSlave *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
 		User:          NewUserPostgres(dbSlave),
+		Post:          NewPostPostgres(db),
 		Following:     NewFollowingPostgres(db),
 	}
 }
