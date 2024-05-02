@@ -17,3 +17,7 @@ func (s *FollowingService) Follow(followeeId string, followerId string) error {
 func (s *FollowingService) Unfollow(followeeId string, followerId string) error {
 	return s.repo.Unfollow(followeeId, followerId)
 }
+
+func (s *FollowingService) GetFollowers(followeeId string) ([]string, error) {
+	return s.repo.GetFollowers(followeeId)
+}
