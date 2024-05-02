@@ -40,6 +40,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			post.DELETE(":id", h.authenticationMiddleware(), h.deletePost)
 		}
 
+		api.GET("feed", h.authenticationMiddleware(), h.getFeed)
+
 		api.PUT("follow/:id", h.authenticationMiddleware(), h.follow)
 		api.PUT("unfollow/:id", h.authenticationMiddleware(), h.unfollow)
 	}

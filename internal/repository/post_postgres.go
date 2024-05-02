@@ -77,3 +77,23 @@ func (r *PostPostgres) Delete(userId string, postId string) error {
 
 	return nil
 }
+
+func (r *PostPostgres) GetByIds(postsIds []string) ([]entity.Post, error) {
+	var posts []entity.Post
+
+	query := fmt.Sprintf("SELECT id, author_id, content, created_at FROM %s WHERE id IN (?)", userPostsTable)
+	query, args, err := sqlx.In(query, postsIds)
+
+	if err != nil {
+		return nil, err
+	}
+
+	query = r.db.Rebind(query)
+	err = r.db.Select(&posts, query, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}

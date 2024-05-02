@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"github.com/redis/go-redis/v9"
 	"os"
 
 	social "github.com/eydeveloper/highload-social"
@@ -33,6 +35,10 @@ func main() {
 		SSLMode:  viper.GetString("db.sslmode"),
 	})
 
+	if err != nil {
+		logrus.Fatalf("failed to initialize db: %s", err.Error())
+	}
+
 	dbSlave, err := repository.NewPostgresDB(repository.Config{
 		Host:     viper.GetString("db-slave.host"),
 		Port:     viper.GetString("db-slave.port"),
@@ -43,11 +49,17 @@ func main() {
 	})
 
 	if err != nil {
-		logrus.Fatalf("failed to initialized db: %s", err.Error())
+		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%s", viper.GetString("redis.host"), viper.GetString("redis.port")),
+		Password: "",
+		DB:       0,
+	})
+
 	repositories := repository.NewRepository(db, dbSlave)
-	services := service.NewService(repositories)
+	services := service.NewService(repositories, redisClient)
 	handlers := handler.NewHandler(services)
 
 	srv := new(social.Server)

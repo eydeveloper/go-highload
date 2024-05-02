@@ -20,11 +20,13 @@ type Post interface {
 	Update(userId string, postId string, post entity.Post) error
 	Get(id string) (entity.Post, error)
 	Delete(userId string, postId string) error
+	GetByIds(postsIds []string) ([]entity.Post, error)
 }
 
 type Following interface {
 	Follow(followeeId string, followerId string) error
 	Unfollow(followeeId string, followerId string) error
+	GetFollowers(followeeId string) ([]string, error)
 }
 
 type Repository struct {

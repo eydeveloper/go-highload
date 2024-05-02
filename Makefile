@@ -44,4 +44,7 @@ postgres-slave-2-psql: ## Log in to the second PostgreSQL slave console from def
 postgres-slave-3-psql: ## Log in to the third PostgreSQL slave console from default user
 	docker compose exec -it postgres-slave-3 psql -U postgres
 
+redis-cli:
+	docker-compose exec redis redis-cli
+
 default: help

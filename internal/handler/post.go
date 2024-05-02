@@ -22,6 +22,22 @@ func (h *Handler) createPost(c *gin.Context) {
 		return
 	}
 
+	followers, err := h.services.Following.GetFollowers(userId)
+
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	for _, followerId := range followers {
+		err = h.services.Feed.AddPost(followerId, postId)
+
+		if err != nil {
+			newErrorResponse(c, http.StatusInternalServerError, err.Error())
+			return
+		}
+	}
+
 	c.JSON(http.StatusCreated, map[string]interface{}{"post_id": postId})
 }
 
