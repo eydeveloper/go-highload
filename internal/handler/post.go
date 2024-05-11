@@ -15,7 +15,7 @@ func (h *Handler) createPost(c *gin.Context) {
 		return
 	}
 
-	postId, err := h.services.Post.Create(userId, input)
+	post, err := h.services.Post.Create(userId, input)
 
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -30,7 +30,7 @@ func (h *Handler) createPost(c *gin.Context) {
 	}
 
 	for _, followerId := range followers {
-		err = h.services.Feed.AddPost(followerId, postId)
+		err = h.services.Feed.AddPost(followerId, post)
 
 		if err != nil {
 			newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -38,7 +38,7 @@ func (h *Handler) createPost(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusCreated, map[string]interface{}{"post_id": postId})
+	c.JSON(http.StatusCreated, map[string]interface{}{"post_id": post.Id})
 }
 
 func (h *Handler) updatePost(c *gin.Context) {

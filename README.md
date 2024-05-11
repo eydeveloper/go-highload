@@ -4,12 +4,15 @@
 
 This project serves as a practical learning tool directly related to my studies in software architecture. As a student
 enrolled in a software architecture course, I've developed this project to deepen my understanding of architectural
-principles and refine my practical skills. Synchronous replication is configured in this application to ensure data
-integrity of slave replicas.
+principles and refine my practical skills. It incorporates RabbitMQ for message queuing and distribution, along with
+WebSocket services for real-time communication, reflecting modern architectural patterns. Various replication types,
+including physical sync, async, and logical replication, are configured within the application to ensure data integrity
+across slave replicas, enhancing fault tolerance and reliability.
 
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
+
 - You have installed Docker
 - You have installed Go
 
@@ -55,11 +58,24 @@ To set up this project, follow these steps:
    go run cmd/main.go
    ```
 
-## Available Actions
+## Scaling
 
-### This project supports the following actions:
+### WebSocket services
 
-- Register: Allows users to register for a new account.
-- Login: Enables users to authenticate and log in to their accounts.
-- Get User by ID: Retrieves user information based on the provided user ID.
-- Search users by name: Finds users by first name and last name.
+WebSocket services achieve linear scalability through load balancing, horizontal scaling, and optimized resource
+utilization. Load balancers evenly distribute incoming connections across multiple servers, while horizontal scaling
+involves adding more servers dynamically to handle increasing loads. Optimized resource utilization includes techniques
+like asynchronous I/O and event-driven architectures to maximize server throughput and responsiveness. Monitoring and
+auto-scaling mechanisms ensure optimal resource allocation and responsiveness during peak loads. Fault tolerance is
+ensured through redundant components and failover mechanisms, allowing WebSocket services to seamlessly handle growing
+numbers of concurrent connections while maintaining high performance and reliability.
+
+### RabbitMQ
+
+Scaling RabbitMQ involves both horizontal and vertical strategies. Horizontal scaling encompasses cluster formation,
+load balancing, and sharding queues across multiple nodes, while vertical scaling entails increasing node resources and
+optimizing configurations. Monitoring metrics and employing auto-scaling mechanisms are crucial for dynamically
+adjusting RabbitMQ clusters. High availability is ensured through replication, mirroring, and geographic distribution of
+RabbitMQ clusters, enhancing fault tolerance and disaster recovery capabilities. By implementing these strategies and
+best practices, RabbitMQ can efficiently handle larger workloads while maintaining reliability and performance in
+distributed systems.

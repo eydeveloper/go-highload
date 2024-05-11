@@ -46,6 +46,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		api.PUT("unfollow/:id", h.authenticationMiddleware(), h.unfollow)
 	}
 
+	ws := router.Group("ws")
+	{
+		ws.GET("feed", h.authenticationMiddleware(), h.getRealTimeFeed)
+	}
+
 	return router
 }
 

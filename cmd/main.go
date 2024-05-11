@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/redis/go-redis/v9"
 	"os"
 
 	social "github.com/eydeveloper/highload-social"
@@ -11,6 +10,8 @@ import (
 	"github.com/eydeveloper/highload-social/internal/service"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -58,12 +59,45 @@ func main() {
 		DB:       0,
 	})
 
+	defer redisClient.Close()
+
+	amqpConnection, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+
+	if err != nil {
+		logrus.Fatalf("failed to connect to the amqp connection: %s", err.Error())
+	}
+
+	defer amqpConnection.Close()
+
+	amqpChannel, err := amqpConnection.Channel()
+
+	if err != nil {
+		logrus.Fatalf("failed to connect to the amqp channel: %s", err.Error())
+	}
+
+	defer amqpChannel.Close()
+
+	err = amqpChannel.ExchangeDeclare(
+		"feed",
+		"direct",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+
+	if err != nil {
+		logrus.Fatalf("failed to declare the posts queue: %s", err.Error())
+	}
+
 	repositories := repository.NewRepository(db, dbSlave)
-	services := service.NewService(repositories, redisClient)
+	services := service.NewService(repositories, redisClient, amqpChannel)
 	handlers := handler.NewHandler(services)
 
-	srv := new(social.Server)
-	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+	err = new(social.Server).Run(viper.GetString("port"), handlers.InitRoutes())
+
+	if err != nil {
 		logrus.Fatalf("error occured while running http server: %s", err.Error())
 	}
 }

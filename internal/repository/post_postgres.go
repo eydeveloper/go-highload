@@ -16,17 +16,18 @@ func NewPostPostgres(db *sqlx.DB) *PostPostgres {
 	return &PostPostgres{db: db}
 }
 
-func (r *PostPostgres) Create(userId string, post entity.Post) (string, error) {
-	var id string
+func (r *PostPostgres) Create(userId string, post entity.Post) (entity.Post, error) {
+	var result entity.Post
 
-	query := fmt.Sprintf(`INSERT INTO %s (author_id, content) VALUES ($1, $2) RETURNING id`, userPostsTable)
+	query := fmt.Sprintf(`
+		INSERT INTO %s (author_id, content)
+		VALUES ($1, $2)
+		RETURNING id, author_id, content, created_at
+	`, userPostsTable)
 	row := r.db.QueryRow(query, userId, post.Content)
+	err := row.Scan(&result.Id, &result.AuthorId, &result.Content, &result.CreatedAt)
 
-	if err := row.Scan(&id); err != nil {
-		return "", err
-	}
-
-	return id, nil
+	return result, err
 }
 
 func (r *PostPostgres) Update(userId string, postId string, post entity.Post) error {

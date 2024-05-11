@@ -13,7 +13,7 @@ func NewPostService(repo repository.Post) *PostService {
 	return &PostService{repo: repo}
 }
 
-func (s *PostService) Create(userId string, post entity.Post) (string, error) {
+func (s *PostService) Create(userId string, post entity.Post) (entity.Post, error) {
 	return s.repo.Create(userId, post)
 }
 

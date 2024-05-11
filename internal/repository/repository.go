@@ -16,7 +16,7 @@ type User interface {
 }
 
 type Post interface {
-	Create(userId string, post entity.Post) (string, error)
+	Create(userId string, post entity.Post) (entity.Post, error)
 	Update(userId string, postId string, post entity.Post) error
 	Get(id string) (entity.Post, error)
 	Delete(userId string, postId string) error
