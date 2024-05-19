@@ -24,6 +24,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			auth.POST("login", h.login)
 			auth.POST("register", h.register)
+			auth.GET("verify", h.authenticationMiddleware(), h.verify)
 		}
 
 		user := api.Group("user")

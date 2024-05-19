@@ -12,6 +12,12 @@ type loginInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
+func (h *Handler) verify(c *gin.Context) {
+	userId := c.MustGet("userId").(string)
+
+	c.JSON(http.StatusOK, map[string]interface{}{"user_id": userId})
+}
+
 func (h *Handler) login(c *gin.Context) {
 	var input loginInput
 
