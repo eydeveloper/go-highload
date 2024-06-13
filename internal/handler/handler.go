@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/eydeveloper/highload-social/internal/service"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 	"strings"
 )
@@ -47,6 +48,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		api.PUT("unfollow/:id", h.authenticationMiddleware(), h.unfollow)
 	}
 
+	messengerApi := router.Group("messenger-api")
+	{
+		messengerApi.POST("messages", h.authenticationMiddleware(), h.requestIdMiddleware(), h.sendMessage)
+		messengerApi.GET("messages/:id", h.authenticationMiddleware(), h.requestIdMiddleware(), h.getMessages)
+	}
+
 	ws := router.Group("ws")
 	{
 		ws.GET("feed", h.authenticationMiddleware(), h.getRealTimeFeed)
@@ -77,6 +84,19 @@ func (h *Handler) authenticationMiddleware() gin.HandlerFunc {
 		}
 
 		c.Set("userId", userId)
+		c.Next()
+	}
+}
+
+func (h *Handler) requestIdMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		requestId := c.Request.Header.Get("X-Request-ID")
+		if requestId == "" {
+			requestId = uuid.New().String()
+		}
+
+		c.Writer.Header().Set("X-Request-ID", requestId)
+		c.Set("X-Request-ID", requestId)
 		c.Next()
 	}
 }
