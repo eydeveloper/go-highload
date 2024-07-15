@@ -10,7 +10,7 @@ db:
 
 db-slave:
   host: "localhost"
-  port: "5435"
+  port: "5488"
   username: "postgres"
   password: "postgres"
   dbname: "postgres"
