@@ -83,10 +83,23 @@ services:
     image: "rabbitmq:3-management-alpine"
     container_name: "highload-rabbitmq"
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+
+  haproxy:
+    image: haproxy:3.0
+    container_name: "highload-haproxy"
+    volumes:
+      - ./docker/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "5488:5488"
+    depends_on:
+        - postgres-slave-1
+        - postgres-slave-2
+    networks:
+      - postgres
 
 volumes:
   postgres-master-data:
